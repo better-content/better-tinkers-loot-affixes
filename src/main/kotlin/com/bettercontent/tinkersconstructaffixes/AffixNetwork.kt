@@ -61,6 +61,7 @@ internal object AffixNetwork {
         val source = inventory.getItem(packet.sourceSlot)
         val type = AffixItems.type(source) ?: return
         if (type.name != packet.currencyType) return
+        val partId = net.minecraftforge.registries.ForgeRegistries.ITEMS.getKey(target.item).toString()
         val result = AffixCrafting.apply(target, type, player.random)
         if (result != AffixOperationResult.APPLIED && result != AffixOperationResult.DESTROYED) {
             player.displayClientMessage(Component.translatable("message.tinkers_construct_affixes.operation.${result.name.lowercase()}"), true)
@@ -69,6 +70,9 @@ internal object AffixNetwork {
         source.shrink(1)
         inventory.setChanged()
         player.containerMenu.broadcastChanges()
+        if (type == AffixCurrencyType.MUTATE) net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(
+            com.bettercontent.tinkersconstructaffixes.api.event.RuinousFluxEvent(player, packet.nonce,
+                result == AffixOperationResult.DESTROYED, partId))
         val level = player.level() as ServerLevel
         if (result == AffixOperationResult.DESTROYED) {
             level.playSound(null, player.blockPosition(), SoundEvents.GLASS_BREAK, SoundSource.PLAYERS, 0.9f, 0.55f)

@@ -22,6 +22,29 @@ import java.util.UUID
 @GameTestHolder(TConAffixesMod.MOD_ID)
 @PrefixGameTestTemplate(false)
 object TConAffixGameTests {
+    class MutationProbe {
+        val events = mutableListOf<com.bettercontent.tinkersconstructaffixes.api.event.RuinousFluxEvent>()
+        @net.minecraftforge.eventbus.api.SubscribeEvent fun resolved(event: com.bettercontent.tinkersconstructaffixes.api.event.RuinousFluxEvent) { events += event }
+    }
+    @GameTest(templateNamespace = "minecraft", template = "empty", timeoutTicks = 80)
+    @JvmStatic fun committedMutationEmitsOnceAfterCurrencyConsumption(helper: GameTestHelper) {
+        val player = testPlayer(helper, "mutation-evidence")
+        val target = TConAffixRewards.rollAffixedPart(RandomSource.create(881L), AffixOrigin.GLOBAL, "gametest")!!
+        val currency = AffixItems.stack(AffixCurrencyType.MUTATE, 2)
+        player.inventory.setItem(0,currency); player.inventory.setItem(1,target)
+        val packet = AffixInventoryActionPacket(player.containerMenu.containerId,0,1,AffixCurrencyType.MUTATE.name,AffixNetwork.fingerprint(target),500L,false)
+        val probe=MutationProbe();net.minecraftforge.common.MinecraftForge.EVENT_BUS.register(probe)
+        try {
+            AffixNetwork.handle(packet.copy(targetFingerprint=packet.targetFingerprint+1,nonce=499L),player)
+            helper.assertTrue(probe.events.isEmpty()&&currency.count==2,"Rejected mutation emitted evidence")
+            AffixNetwork.handle(packet,player)
+            helper.assertTrue(probe.events.size==1&&currency.count==1,"Committed mutation must emit once after currency consumption")
+            helper.assertTrue(probe.events.single().destroyed==target.isEmpty,"Evidence misreported destruction")
+            AffixNetwork.handle(packet,player)
+            helper.assertTrue(probe.events.size==1&&currency.count==1,"Replay emitted another mutation")
+        } finally { net.minecraftforge.common.MinecraftForge.EVENT_BUS.unregister(probe) }
+        helper.succeed()
+    }
     @GameTest(templateNamespace = "minecraft", template = "empty", timeoutTicks = 40)
     @JvmStatic
     fun cacheUseProducesOneStampedPartAndConsumesOneCache(helper: GameTestHelper) {
