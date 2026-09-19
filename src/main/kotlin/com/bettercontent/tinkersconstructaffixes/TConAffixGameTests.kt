@@ -234,6 +234,20 @@ object TConAffixGameTests {
             "Shearing an empty part did not fail safely"
         )
 
+        val multiRemove = base.copy()
+        val shearedAffixes = sixAffixes.take(3)
+        TConAffixRewards.writeToolAffixes(multiRemove, shearedAffixes)
+        helper.assertTrue(
+            AffixCrafting.apply(multiRemove, AffixCurrencyType.REMOVE, RandomSource.create(26L)) == AffixOperationResult.APPLIED,
+            "Shearing a populated part did not apply"
+        )
+        val survivors = TConAffixRewards.existingToolAffixes(multiRemove)
+        helper.assertTrue(survivors.size == shearedAffixes.size - 1, "Shearing removed more than one affix")
+        helper.assertTrue(
+            survivors.all { survivor -> shearedAffixes.any { original -> original == survivor } },
+            "Shearing did not preserve the surviving affix data"
+        )
+
         val locked = base.copy()
         locked.orCreateTag.putBoolean(AffixCrafting.MUTATION_LOCKED_TAG, true)
         helper.assertTrue(

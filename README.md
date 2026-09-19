@@ -9,7 +9,7 @@ The Nether and Aether act as distinct "Fonts" with themed materials, part pools,
 Six currencies support an inventory-native crafting loop:
 
 - Right-click a flux or seal in any player-inventory slot to arm it, then left-click a compatible Tinkers part. Shift-click repeats while the currency remains available.
-- Recasting rerolls, Grafting adds a line, and Shearing removes one.
+- Recasting rerolls, Grafting adds a line, and Shearing draws one index once and removes exactly one eligible affix.
 - Forerune and Afterrune preserve one populated affix side while rerolling the other.
 - Ruinous Flux offers a confirmed, one-way mutation with powerful outcomes, permanent mutation lock, and a 20% destruction risk.
 - Shift-right-click an affixed part with no currency armed to salvage it. Natural rewards keep an immutable salvage seed and quality band, preventing reroll or duplication exploits.
@@ -23,6 +23,8 @@ Tinkers remains the sole causal authority for material behavior. Each owned mate
 Affix rewards deliberately exclude inert material definitions and materials or modifier grants that teleport the player, hover, reduce gravity, add jumps, or otherwise bypass traversal. Grounded guard, target displacement, projectile, and status behaviours remain valid.
 
 Server worlds may tune hostile and Font drop rates, currency and cache rates, tier weights, and material allowlists in `tinkers_construct_affixes-server.toml`. Global defaults are 1% hostile part/currency drops, 3% chest cache/currency rolls, and material-tier weights of 80% / 17% / 2.9% / 0.1%. Font hostile drops use 3% part and 4% currency rates.
+
+Spawner-origin mobs are marked at spawn and never yield affixed parts or reforging currency. This leaves their native drops and XP untouched. Affix kill credit deliberately remains narrower than spirit income: direct player-attributed melee, projectile, and spell sources qualify; owned creatures and delayed kill credit do not.
 
 ## Build
 

@@ -2,6 +2,7 @@ package com.bettercontent.tinkersconstructaffixes
 
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.entity.Mob
+import net.minecraft.world.entity.MobSpawnType
 import net.minecraft.world.entity.item.ItemEntity
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.world.level.storage.loot.LootPool
@@ -10,10 +11,16 @@ import net.minecraft.world.level.storage.loot.predicates.LootItemRandomChanceCon
 import net.minecraft.world.level.storage.loot.providers.number.ConstantValue
 import net.minecraftforge.event.LootTableLoadEvent
 import net.minecraftforge.event.entity.living.LivingDropsEvent
+import net.minecraftforge.event.entity.living.MobSpawnEvent
 import net.minecraftforge.eventbus.api.SubscribeEvent
 
 object GlobalAffixLoot {
     private val noRewardDimensions = setOf("the_bumblezone:the_bumblezone", "rats:ratlantis")
+
+    @SubscribeEvent
+    fun onFinalizeSpawn(event: MobSpawnEvent.FinalizeSpawn) {
+        if (event.spawnType == MobSpawnType.SPAWNER) AffixKillEligibility.markSpawnerOrigin(event.entity)
+    }
 
     @SubscribeEvent
     fun onLivingDrops(event: LivingDropsEvent) {
@@ -21,6 +28,7 @@ object GlobalAffixLoot {
         if (level.isClientSide || event.entity !is Mob || event.entity.type.category != net.minecraft.world.entity.MobCategory.MONSTER) return
         if (level.dimension().location().toString() in noRewardDimensions) return
         val killer = event.source.entity as? ServerPlayer ?: return
+        if (!AffixKillEligibility.isEligible(event.entity as Mob, killer)) return
         val origin = AffixOrigins.fromDimension(level.dimension().location())
         val partChance = if (origin == AffixOrigin.GLOBAL) TConAffixConfig.hostileDropChance() else TConAffixConfig.fontDropChance()
         if (level.random.nextDouble() < partChance) {

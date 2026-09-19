@@ -54,7 +54,7 @@ internal object AffixCrafting {
             }
             AffixCurrencyType.REMOVE -> {
                 if (affixes.isEmpty()) return AffixOperationResult.NO_AFFIXES
-                affixes.filterIndexed { index, _ -> index != random.nextInt(affixes.size) }
+                removeOneAffix(affixes) { random.nextInt(it) }
             }
             AffixCurrencyType.PRESERVE_PREFIXES -> preserveSide(
                 affixes, TConAffixRewards.AffixKind.PREFIX, partId, profile.family, origin, random
@@ -81,6 +81,14 @@ internal object AffixCrafting {
         val common = List(band.coerceAtMost(3)) { rollSalvageCommon(random) }.toMutableList()
         if (band == 4 && random.nextFloat() < 0.10f) common += AffixCurrencyType.MUTATE
         return common
+    }
+
+    /** Draw exactly one eligible index before rebuilding the list, so Shearing removes one affix. */
+    internal fun removeOneAffix(affixes: List<CompoundTag>, drawIndex: (Int) -> Int): List<CompoundTag> {
+        if (affixes.isEmpty()) return affixes
+        val selected = drawIndex(affixes.size)
+        require(selected in affixes.indices) { "Shearing selected an invalid affix index" }
+        return affixes.filterIndexed { index, _ -> index != selected }.map(CompoundTag::copy)
     }
 
     fun stampNatural(stack: ItemStack, origin: AffixOrigin, provenance: String, random: RandomSource) {
