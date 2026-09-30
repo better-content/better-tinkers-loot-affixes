@@ -1,4 +1,4 @@
-# Tinkers Construct Affixes
+# Better Tinkers Loot Affixes
 
 Forge 1.20.1 mod that turns Tinkers' Construct parts into a global, long-term loot chase.
 
@@ -22,7 +22,7 @@ Tinkers remains the sole causal authority for material behavior. Each owned mate
 
 Affix rewards deliberately exclude inert material definitions and materials or modifier grants that teleport the player, hover, reduce gravity, add jumps, or otherwise bypass traversal. Grounded guard, target displacement, projectile, and status behaviours remain valid.
 
-Server worlds may tune hostile and Font drop rates, currency and cache rates, tier weights, and material allowlists in `tinkers_construct_affixes-server.toml`. Global defaults are 1% hostile part/currency drops, 3% chest cache/currency rolls, and material-tier weights of 80% / 17% / 2.9% / 0.1%. Font hostile drops use 3% part and 4% currency rates.
+Server worlds may tune hostile and Font drop rates, currency and cache rates, tier weights, and material allowlists in `better_tinkers_loot_affixes-server.toml`. Global defaults are 1% hostile part/currency drops, 3% chest cache/currency rolls, and material-tier weights of 80% / 17% / 2.9% / 0.1%. Font hostile drops use 3% part and 4% currency rates.
 
 Spawner-origin mobs are marked at spawn and never yield affixed parts or reforging currency. This leaves their native drops and XP untouched. Affix kill credit deliberately remains narrower than spirit income: direct player-attributed melee, projectile, and spell sources qualify; owned creatures and delayed kill credit do not.
 
@@ -34,13 +34,13 @@ Use Java 17 and run:
 ./gradlew test reobfJar stageRuntimeJar
 ```
 
-The deployable reobfuscated JAR is written to `build/libs/tinkers-construct-affixes-<version>.jar`.
+The deployable reobfuscated JAR is written to `build/libs/better-tinkers-loot-affixes-<version>.jar`.
 
 ## Canonical identity
 
-- Repository and release artifact: `tinkers-construct-affixes`
-- Mod ID and resource namespace: `tinkers_construct_affixes`
-- Java package: `com.bettercontent.tinkersconstructaffixes`
+- Repository and release artifact: `better-tinkers-loot-affixes`
+- Mod ID and resource namespace: `better_tinkers_loot_affixes`
+- Java package: `com.bettercontent.bettertinkerslootaffixes`
 - Validation: `./gradlew verifyFull` (JVM checks plus headless Forge GameTests)
 
 This normalization is a clean break. Worlds, configuration files, and integrations created for earlier identities are not migrated or aliased.

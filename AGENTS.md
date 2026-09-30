@@ -2,9 +2,9 @@
 
 ## Project identity
 
-- Repository and artifact: `tinkers-construct-affixes`
-- Mod ID and resource namespace: `tinkers_construct_affixes`
-- Base package: `com.bettercontent.tinkersconstructaffixes`
+- Repository and artifact: `better-tinkers-loot-affixes`
+- Mod ID and resource namespace: `better_tinkers_loot_affixes`
+- Base package: `com.bettercontent.bettertinkerslootaffixes`
 - Java: 17
 - Forge: 1.20.1-47.4.13
 

@@ -6,4 +6,4 @@ pluginManagement {
     }
 }
 
-rootProject.name = 'tinkers-construct-affixes'
+rootProject.name = 'better-tinkers-loot-affixes'

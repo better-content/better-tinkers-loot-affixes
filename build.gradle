@@ -4,9 +4,9 @@ plugins {
 }
 
 ext {
-    modId = 'tinkers_construct_affixes'
-    artifactName = 'tinkers-construct-affixes'
-    modName = 'Tinkers Construct Affixes'
+    modId = 'better_tinkers_loot_affixes'
+    artifactName = 'better-tinkers-loot-affixes'
+    modName = 'Better Tinkers Loot Affixes'
     modGroupId = 'com.bettercontent'
     modDescription = 'Affixed Tinkers parts found throughout the world.'
 }
@@ -37,7 +37,7 @@ tasks.register('verifyFull') {
 
 tasks.named('headlessGameTest').configure {
     doLast {
-        def gameTestSource = file('src/main/kotlin/com/bettercontent/tinkersconstructaffixes/TConAffixGameTests.kt')
+        def gameTestSource = file('src/main/kotlin/com/bettercontent/bettertinkerslootaffixes/TConAffixGameTests.kt')
         def expectedTests = gameTestSource.readLines().count { it.contains('@GameTest(') }
         def gameTestLog = file('run-gametest/logs/latest.log')
         def successMarker = "All ${expectedTests} required tests passed"

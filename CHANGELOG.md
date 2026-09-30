@@ -26,6 +26,6 @@
 
 ### Changed
 
-- Standardized the project as **Tinkers Construct Affixes** with mod ID `tinkers_construct_affixes`, artifact `tinkers-construct-affixes`, and package `com.bettercontent.tinkersconstructaffixes`.
+- Standardized the project as **Tinkers Construct Affixes** with mod ID `better_tinkers_loot_affixes`, artifact `better-tinkers-loot-affixes`, and package `com.bettercontent.bettertinkerslootaffixes`.
 - Adopted Java 17 and Forge 1.20.1-47.4.13 as the build baseline without changing the project version.
 - This is a clean break; legacy worlds, configurations, and integrations are not migrated.
