@@ -1,5 +1,11 @@
 # Better Tinkers Loot Affixes
 
+## Scope and authority
+
+This repository owns its mod-specific behavior and authoring inputs. Read [local instructions](AGENTS.md)
+and the [shared documentation/policy index](../../better-content-modpack/docs/README.md).
+
+
 Forge 1.20.1 mod that turns Tinkers' Construct parts into a global, long-term loot chase.
 
 Affixed parts can drop from player-killed hostile mobs and appear in chest loot caches. Each reward has a compatible Tinkers material, rolled from configurable weighted tiers; tier 4 remains a deliberately rare jackpot. Tier weights are renormalized across the tiers that actually contain materials compatible with the selected part and physical origin, so a valid cache cannot randomly fail because an incompatible tier was selected. Percentage rolls persist through Tinkers stat rebuilds, and modifier grants are tracked separately from ordinary player-applied modifier levels.
