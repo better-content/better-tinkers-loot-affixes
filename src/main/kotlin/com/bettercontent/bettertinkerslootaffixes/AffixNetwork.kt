@@ -36,17 +36,27 @@ internal object AffixNetwork {
 
     fun send(packet: AffixInventoryActionPacket) = CHANNEL.sendToServer(packet)
 
+    private fun observe(packet: AffixInventoryActionPacket, player: ServerPlayer, result: String, reason: String) {
+        val log = com.bettercontent.bettertinkerslootaffixes.diagnostics.RuntimeDiagnostics.LOG
+        if (!log.enabled("transaction")) return
+        val level = player.serverLevel()
+        com.bettercontent.bettertinkerslootaffixes.diagnostics.FeatureObservation.inventory(log, {
+            com.bettercontent.bettertinkerslootaffixes.diagnostics.PlaytestLog.Context(
+                "server", level.dimension().location().toString(), level.gameTime, player.uuid.toString(), "")
+        }, result, reason, packet.nonce, packet.menuId, packet.targetSlot)
+    }
+
     internal fun handle(packet: AffixInventoryActionPacket, player: ServerPlayer) {
-        if (packet.nonce <= (lastNonce[player.uuid] ?: Long.MIN_VALUE)) return
+        if (packet.nonce <= (lastNonce[player.uuid] ?: Long.MIN_VALUE)) { observe(packet, player, "rejected", "replay"); return }
         lastNonce[player.uuid] = packet.nonce
-        if (player.containerMenu.containerId != packet.menuId) return
+        if (player.containerMenu.containerId != packet.menuId) { observe(packet, player, "rejected", "menu_changed"); return }
         val inventory = player.inventory
-        if (packet.targetSlot !in 0 until inventory.containerSize) return
+        if (packet.targetSlot !in 0 until inventory.containerSize) { observe(packet, player, "rejected", "target_slot"); return }
         val target = inventory.getItem(packet.targetSlot)
-        if (target.isEmpty || fingerprint(target) != packet.targetFingerprint || !AffixCrafting.canTarget(target)) return
+        if (target.isEmpty || fingerprint(target) != packet.targetFingerprint || !AffixCrafting.canTarget(target)) { observe(packet, player, "rejected", "target_changed_or_ineligible"); return }
 
         if (packet.salvage) {
-            val payout = AffixCrafting.salvage(target) ?: return
+            val payout = AffixCrafting.salvage(target) ?: run { observe(packet, player, "rejected", "no_salvage"); return }
             payout.groupingBy { it }.eachCount().forEach { (type, count) ->
                 val reward = AffixItems.stack(type, count)
                 if (!inventory.add(reward)) player.drop(reward, false)
@@ -54,20 +64,23 @@ internal object AffixNetwork {
             player.level().playSound(null, player.blockPosition(), SoundEvents.GRINDSTONE_USE, SoundSource.PLAYERS, 0.7f, 0.9f)
             inventory.setChanged()
             player.containerMenu.broadcastChanges()
+            observe(packet, player, "committed", "salvage_spent_rewards_dispatched")
             return
         }
 
-        if (packet.sourceSlot !in 0 until inventory.containerSize || packet.sourceSlot == packet.targetSlot) return
+        if (packet.sourceSlot !in 0 until inventory.containerSize || packet.sourceSlot == packet.targetSlot) { observe(packet, player, "rejected", "source_slot"); return }
         val source = inventory.getItem(packet.sourceSlot)
-        val type = AffixItems.type(source) ?: return
-        if (type.name != packet.currencyType) return
+        val type = AffixItems.type(source) ?: run { observe(packet, player, "rejected", "not_currency"); return }
+        if (type.name != packet.currencyType) { observe(packet, player, "rejected", "currency_changed"); return }
         val partId = net.minecraftforge.registries.ForgeRegistries.ITEMS.getKey(target.item).toString()
         val result = AffixCrafting.apply(target, type, player.random)
         if (result != AffixOperationResult.APPLIED && result != AffixOperationResult.DESTROYED) {
+            observe(packet, player, "rejected", result.name)
             player.displayClientMessage(Component.translatable("message.better_tinkers_loot_affixes.operation.${result.name.lowercase()}"), true)
             return
         }
         source.shrink(1)
+        observe(packet, player, "committed", result.name)
         inventory.setChanged()
         player.containerMenu.broadcastChanges()
         if (type == AffixCurrencyType.MUTATE) net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(

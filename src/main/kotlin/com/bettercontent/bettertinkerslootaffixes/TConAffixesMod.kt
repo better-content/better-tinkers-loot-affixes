@@ -10,6 +10,7 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext
 @Mod(TConAffixesMod.MOD_ID)
 class TConAffixesMod {
     init {
+        com.bettercontent.bettertinkerslootaffixes.diagnostics.RuntimeDiagnostics.initialize()
         val modBus = FMLJavaModLoadingContext.get().modEventBus
         AffixItems.REGISTRY.register(modBus)
         AffixModifiers.REGISTRY.register(modBus)

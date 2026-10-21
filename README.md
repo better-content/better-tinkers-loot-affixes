@@ -1,5 +1,7 @@
 # Better Tinkers Loot Affixes
 
+See [bounded playtest observations](docs/playtest-observations.md) for authoritative currency transaction diagnostics and privacy limits.
+
 ## Scope and authority
 
 This repository owns its mod-specific behavior and authoring inputs. Read [local instructions](AGENTS.md)

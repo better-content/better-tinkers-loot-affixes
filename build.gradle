@@ -39,7 +39,7 @@ tasks.named('headlessGameTest').configure {
     doLast {
         def gameTestSource = file('src/main/kotlin/com/bettercontent/bettertinkerslootaffixes/TConAffixGameTests.kt')
         def expectedTests = gameTestSource.readLines().count { it.contains('@GameTest(') }
-        def gameTestLog = file('run-gametest/logs/latest.log')
+        def gameTestLog = new File(project.ext.nativeGameTestDirectory, 'logs/latest.log')
         def successMarker = "All ${expectedTests} required tests passed"
         if (expectedTests == 0 || !gameTestLog.isFile() || !gameTestLog.text.contains(successMarker)) {
             throw new GradleException("Forge GameTest verification did not report '${successMarker}'")
@@ -47,10 +47,5 @@ tasks.named('headlessGameTest').configure {
     }
 }
 
-tasks.register('resetGameTestWorld', Delete) {
-    delete layout.projectDirectory.dir('run-gametest/world')
-}
-
-tasks.matching { it.name.startsWith('prepareRunGameTestServer') }.configureEach {
-    dependsOn tasks.named('resetGameTestWorld')
-}
+// No destructive native reset: fresh retained attempts preserve all old worlds and diagnostics.
+apply from: file('gradle/native-gametest-fixture.gradle')
