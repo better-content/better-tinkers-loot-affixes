@@ -2,11 +2,7 @@
 
 See [bounded playtest observations](docs/playtest-observations.md) for authoritative currency transaction diagnostics and privacy limits.
 
-## Scope and authority
-
-This repository owns its mod-specific behavior and authoring inputs. Read [local instructions](AGENTS.md)
-and the [shared documentation/policy index](../../better-content-modpack/docs/README.md).
-
+## Scope
 
 Forge 1.20.1 mod that turns Tinkers' Construct parts into a global, long-term loot chase.
 
