@@ -3,6 +3,7 @@ package com.bettercontent.bettertinkerslootaffixes
 import com.mojang.authlib.GameProfile
 import net.minecraft.gametest.framework.GameTest
 import net.minecraft.gametest.framework.GameTestHelper
+import net.minecraft.nbt.CompoundTag
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.util.RandomSource
 import net.minecraft.world.InteractionHand
@@ -58,6 +59,16 @@ object TConAffixGameTests {
         val rewards = inventoryParts(player)
         helper.assertTrue(rewards.size == 1, "A successful cache use must insert exactly one Tinkers part")
         assertStampedReward(helper, rewards.single(), AffixOrigin.GLOBAL)
+        val original = rewards.single()
+        val restored = ItemStack.of(original.save(CompoundTag()))
+        helper.assertTrue(restored.item == original.item && restored.count == original.count,
+            "Saved cache reward changed item or count")
+        helper.assertTrue((restored.item as ToolPartItem).getMaterial(restored) ==
+            (original.item as ToolPartItem).getMaterial(original), "Saved cache reward changed material")
+        helper.assertTrue(TConAffixRewards.existingToolAffixes(restored) == TConAffixRewards.existingToolAffixes(original),
+            "Saved cache reward lost affixes")
+        helper.assertTrue(restored.tag == original.tag, "Saved cache reward changed origin or salvage metadata")
+        assertStampedReward(helper, restored, AffixOrigin.GLOBAL)
         helper.succeed()
     }
 
